@@ -1,0 +1,12 @@
+# Go
+bin/
+coverage.out
+
+# Terraform
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Local credentials and test configuration
+.env
+*.local
