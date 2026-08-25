@@ -2,6 +2,9 @@
 bin/
 coverage.out
 
+# GoReleaser
+dist/
+
 # Terraform
 .terraform/
 *.tfstate
@@ -12,3 +15,4 @@ coverage.out
 *.local
 tests/acceptance/.token
 .claude/settings.local.json
+.secrets-local/
