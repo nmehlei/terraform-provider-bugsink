@@ -1,6 +1,7 @@
 # terraform-provider-bugsink
 
-An independent Terraform provider for [Bugsink](https://www.bugsink.com/).
+An independent Terraform provider for [Bugsink](https://www.bugsink.com/),
+published on the [Terraform Registry](https://registry.terraform.io/providers/nmehlei/bugsink).
 
 `bugsink_team` and `bugsink_project` are usable today: create, read, update,
 import, and drift detection all work against a real instance. There's a real,
@@ -89,8 +90,6 @@ Other things worth knowing:
   reads it back immediately).
 - Changing `team` on an existing `bugsink_project` forces replacement:
   Bugsink has no API to move a project between teams.
-- Not yet published to the Terraform Registry - see `TASKS.md` for what's
-  left before that.
 
 ## Developing
 
@@ -123,6 +122,9 @@ dev_overrides instead of the Registry.)
 
 ## Docs
 
+- [Terraform Registry listing](https://registry.terraform.io/providers/nmehlei/bugsink) —
+  the published provider; `docs/index.md` and `docs/resources/` are the
+  source these pages are generated from.
 - [`docs/implementation-brief.md`](docs/implementation-brief.md) — the
   current plan, and the delete-endpoint policy these resources implement.
 - [`docs/api-contract.md`](docs/api-contract.md) — what we've confirmed

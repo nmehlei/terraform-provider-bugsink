@@ -38,28 +38,33 @@ Before provider resource implementation, obtain upstream agreement on:
 4. A documented compatibility policy for `/api/canonical/0/`.
 5. Idempotency behavior for POST creation, or an idempotency-key mechanism.
 
-Open `docs/upstream-proposal.md` as a GitHub issue in `bugsink/bugsink` before
-starting the provider. Do not claim upstream endorsement unless it is explicit.
+Open `docs/upstream-proposal.md` as a GitHub issue in `bugsink/bugsink`. Do
+not claim upstream endorsement unless it is explicit. Note: this list is no
+longer a hard gate on starting the provider — see AGENTS.md's amended
+"Delete-endpoint policy" (2026-08-24). The issue is still drafted but not
+filed (see `docs/upstream-proposal.md`); filing it remains open work,
+independent of the resources already shipped.
 
 ## Candidate v1 scope
 
-- Provider configuration: `endpoint`, `token`.
-- Resources: `bugsink_team`, `bugsink_project`.
-- Data sources: `bugsink_team`, `bugsink_project` lookups.
+- Provider configuration: `endpoint`, `token`, `insecure` (local-dev only).
+- Resources: `bugsink_team`, `bugsink_project` — shipped as create/read/update
+  plus import and drift detection; `Delete` hard-fails per the amended policy.
 - Import by remote ID.
 - Computed properties: project slug and DSN. Store DSN as sensitive state.
+
+Data sources were considered (read-only reference to existing objects,
+sidestepping the delete question entirely) and deliberately not built once
+the policy amendment made full resources viable instead — see AGENTS.md.
 
 Exclude issue triage, events, comments, releases, alerts, users, and
 sourcemaps from v1.
 
 ## Delivery plan
 
-| Milestone | Outcome |
-| --- | --- |
-| Upstream contract | Delete/auth/versioning decisions agreed and documented |
-| Spike | Go HTTP client plus a disposable Bugsink 2.5 acceptance environment |
-| MVP | Team/project CRUD, import, drift handling, generated docs, acceptance tests |
-| Public v1 | Signed multi-platform releases, Registry publication, compatibility matrix, support policy |
-
-Estimated work after upstream API support: 2–3 person-weeks for MVP and 4–6
-person-weeks for a public v1.
+| Milestone | Outcome | Status |
+| --- | --- | --- |
+| Upstream contract | Delete/auth/versioning decisions agreed and documented | Not agreed; superseded for v1 by the delete-endpoint policy amendment. Issue still unfiled. |
+| Spike | Go HTTP client plus a disposable Bugsink 2.5 acceptance environment | Done |
+| MVP | Team/project CRUD, import, drift handling, generated docs, acceptance tests | Done |
+| Public v1 | Signed multi-platform releases, Registry publication, compatibility matrix, support policy | Signed releases and Registry publication done ([nmehlei/bugsink](https://registry.terraform.io/providers/nmehlei/bugsink)); compatibility matrix and support policy still open |

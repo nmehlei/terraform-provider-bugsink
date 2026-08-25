@@ -14,8 +14,12 @@
       GitVersion (Mainline) auto-tags and releases every push to `main` —
       see `.github/workflows/release.yml`. `v0.1.0`/`v0.1.1` published with
       signed checksums.
-- [ ] Registry publication: the one remaining manual step is connecting
-      `nmehlei/terraform-provider-bugsink` at registry.terraform.io (sign in
-      with GitHub, "Publish provider", upload the release-signing GPG public
-      key from `.secrets-local/gpg-public-key.asc` under Signing Keys). Not
-      automatable — requires an interactive login.
+- [x] Registry publication: live at
+      https://registry.terraform.io/providers/nmehlei/bugsink. Required
+      creating an HCP Terraform organization (`nmehlei`, Personal type —
+      HCP Terraform now requires an org container even for solo publishing),
+      connecting GitHub via the HCP Terraform GitHub App, and adding the
+      release-signing GPG public key (`.secrets-local/gpg-public-key.asc`,
+      not committed) to the namespace's Signing Keys before "Publish
+      provider" would accept the repo. `terraform init` with
+      `source = "nmehlei/bugsink"` now works with no special config.
