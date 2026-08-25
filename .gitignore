@@ -10,3 +10,5 @@ coverage.out
 # Local credentials and test configuration
 .env
 *.local
+tests/acceptance/.token
+.claude/settings.local.json

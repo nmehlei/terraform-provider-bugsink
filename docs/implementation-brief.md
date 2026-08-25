@@ -6,12 +6,23 @@ Publish an Apache-2.0 licensed, community Terraform provider that declaratively
 manages Bugsink teams and projects, with a stable provider address and signed
 cross-platform releases.
 
-## Current conclusion — do not start resource CRUD yet
+## Current conclusion — create/update yes, delete still blocked
 
 Bugsink 2.5's canonical API provides list, create, retrieve, and partial-update
 operations for teams and projects. It does not document delete operations for
-teams, projects, or releases. Terraform requires a safe delete lifecycle;
-removing an object from state while leaving a remote project is unacceptable.
+teams, projects, or releases.
+
+See AGENTS.md's "Delete-endpoint policy" (amended 2026-08-24):
+`bugsink_team` and `bugsink_project` may be implemented with full
+create/read/update. `Delete` must fail with an actionable diagnostic
+instead of silently removing the resource from state - silently untracking
+a resource that still exists remotely is the state/reality drift Terraform
+is supposed to prevent, and remains unacceptable regardless of this policy
+change. This is a deliberate, documented trade-off, not the ideal end
+state: these resources are a poor fit for any workflow that assumes
+`terraform destroy` always succeeds (ephemeral environments, CI teardown).
+The upstream ask in `docs/upstream-proposal.md` still stands - a real
+delete endpoint removes this limitation entirely.
 
 Tokens currently have installation-wide access. That is too broad for the
 default automation credential of a public provider.

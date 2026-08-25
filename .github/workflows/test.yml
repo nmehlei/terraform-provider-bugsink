@@ -1,0 +1,55 @@
+name: test
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    name: unit tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - run: gofmt -l .
+      - run: go build ./...
+      - run: go vet ./...
+      - run: go test -race ./src/... ./tests/unit/...
+
+  acceptance:
+    name: acceptance tests (disposable Bugsink 2.5)
+    runs-on: ubuntu-latest
+    # Skip on PRs from forks: they can't reach anything sensitive here (the
+    # environment is disposable and local), but there's no reason to spend
+    # several minutes of Docker time on every fork PR by default.
+    if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version-file: go.mod
+      - uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_wrapper: false
+      - name: Start disposable Bugsink environment
+        working-directory: tests/acceptance
+        run: ./up.sh
+      - name: Run acceptance tests
+        env:
+          BUGSINK_ACCEPTANCE: "1"
+        working-directory: tests/acceptance
+        run: go test -race -v ./...
+      - name: Tear down disposable Bugsink environment
+        if: always()
+        working-directory: tests/acceptance
+        run: ./down.sh

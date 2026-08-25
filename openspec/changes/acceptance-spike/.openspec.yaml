@@ -1,0 +1,4 @@
+schema: spec-driven
+created: 2026-08-18
+goal: Validate a hand-written Go client against a real Bugsink 2.5 instance
+  before building Terraform resources

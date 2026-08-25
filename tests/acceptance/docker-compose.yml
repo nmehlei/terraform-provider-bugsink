@@ -1,0 +1,49 @@
+services:
+  db:
+    image: postgres:17-alpine
+    restart: "no"
+    environment:
+      POSTGRES_USER: bugsinkuser
+      POSTGRES_PASSWORD: acceptance-test-only-password
+      POSTGRES_DB: bugsink
+    tmpfs:
+      # No named volume: state does not outlive this compose project, per
+      # the "disposable, isolated instance" requirement.
+      - /var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -h db"]
+      retries: 5
+      start_period: 10s
+      interval: 5s
+      timeout: 5s
+
+  web:
+    # Pinned by digest, not just tag: see README.md for how this was resolved
+    # and how to re-verify it against a newer Bugsink 2.5.x patch release.
+    image: bugsink/bugsink@sha256:b697016950d8aa7d94020def15bc2727e8fc40148f079884ae4cdacf7ea1e9a3
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: "no"
+    ports:
+      # Bound to loopback only: this instance has a fixed, publicly-known
+      # superuser password (below) and must never be reachable from the
+      # network, even on a shared/coworking wifi.
+      - "127.0.0.1:8000:8000"
+    environment:
+      # Test-only secret; never reused outside this disposable environment.
+      # Must be long/random enough to pass Django's deploy check
+      # (security.W009) or the container refuses to start.
+      SECRET_KEY: "acceptance-test-only-key-/UnYEMh-MW3afe-Ybv9ngXfzdb4LlTpuhG4kBIsNOnwSfgOtKX-1nvJg6blfAUpDp-not-for-reuse"
+      CREATE_SUPERUSER: "acceptance@example.invalid:acceptance-test-only-password"
+      PORT: "8000"
+      DATABASE_URL: postgresql://bugsinkuser:acceptance-test-only-password@db:5432/bugsink
+      BEHIND_HTTPS_PROXY: "false"
+      BASE_URL: "http://localhost:8000"
+    healthcheck:
+      # Stdlib-only: the bugsink/bugsink image isn't guaranteed to have
+      # `requests` importable, and this only needs a GET.
+      test: ["CMD-SHELL", "python -c 'import urllib.request; urllib.request.urlopen(\"http://localhost:8000/health/ready\")'"]
+      interval: 5s
+      timeout: 20s
+      retries: 10

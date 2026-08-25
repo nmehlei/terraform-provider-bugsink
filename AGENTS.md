@@ -9,10 +9,30 @@ Plugin Framework; do not use SDKv2 for new code.
 ## First action
 
 Read `docs/implementation-brief.md`, `docs/api-contract.md`, and
-`docs/upstream-proposal.md`. Do not implement `bugsink_project`,
-`bugsink_team`, or `bugsink_release` as Terraform resources while their delete
-operations are unavailable. A no-op delete or state-only removal is not an
-acceptable public-provider behavior.
+`docs/upstream-proposal.md`.
+
+## Delete-endpoint policy (amended 2026-08-24)
+
+Bugsink's canonical API still has no documented delete endpoint for teams,
+projects, or releases. The original policy here was to build nothing until
+that changed. That's been revised: `bugsink_team` and `bugsink_project` may
+be implemented as Terraform resources with full create/read/update, on the
+condition that `Delete` never silently removes the resource from state. A
+no-op delete or silent state-only removal is still not acceptable — that's
+the exact state/reality drift Terraform resources exist to prevent. Instead,
+`Delete` MUST fail with a diagnostic that explains the remote object cannot
+be deleted through the API and tells the user how to detach it from state
+themselves (`terraform state rm`) if they want to stop managing it.
+
+Known consequence, and it must be documented prominently wherever these
+resources are documented: any workflow that assumes `terraform destroy`
+succeeds unconditionally (ephemeral environments, CI teardown) will get
+stuck on these resources. This makes them a poor fit for throwaway
+infrastructure and a reasonable fit for long-lived, manually-tended teams
+and projects.
+
+`bugsink_release` is unaffected by this change and stays out of v1 scope
+regardless (see "Candidate v1 scope" in `docs/implementation-brief.md`).
 
 ## Security and testing
 
