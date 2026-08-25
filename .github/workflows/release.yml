@@ -1,30 +1,75 @@
 name: release
 
+# Every push to main gets a new version and a signed release: GitVersion
+# (Mainline mode, see GitVersion.yml) computes the next SemVer, this job
+# tags it, then GoReleaser builds/signs/publishes in the same job/checkout.
+#
+# Deliberately one workflow, not two: a workflow that pushes a tag using the
+# default GITHUB_TOKEN does NOT trigger other workflows (GitHub's built-in
+# anti-recursion protection), so a separate "tag" workflow feeding a
+# tag-triggered "release" workflow would silently never fire the release.
+# Tagging and releasing happen in the same job instead, against the same
+# local checkout, so no cross-workflow trigger is needed.
+#
+# A manual `git push origin vX.Y.Z` still works too (via workflow_dispatch
+# below) for a one-off/out-of-band release, but that's the exception, not
+# the normal path.
+
 on:
   push:
-    tags:
-      - "v*"
+    branches: [main]
+  workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  goreleaser:
+  release:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
+
       - uses: actions/setup-go@v5
         with:
           go-version-file: go.mod
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v3
+        with:
+          versionSpec: "5.x"
+
+      - name: Determine version
+        id: gitversion
+        uses: gittools/actions/gitversion/execute@v3
+
+      - name: Tag this commit
+        id: tag
+        env:
+          VERSION: v${{ steps.gitversion.outputs.semVer }}
+        run: |
+          if git rev-parse "$VERSION" >/dev/null 2>&1; then
+            echo "Tag $VERSION already exists (no version-affecting change since the last release), skipping."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git tag -a "$VERSION" -m "$VERSION"
+          git push origin "$VERSION"
+          echo "skip=false" >> "$GITHUB_OUTPUT"
+
       - name: Import GPG key
+        if: steps.tag.outputs.skip != 'true'
         uses: crazy-max/ghaction-import-gpg@v6
         id: import_gpg
         with:
           gpg_private_key: ${{ secrets.GPG_PRIVATE_KEY }}
           passphrase: ${{ secrets.GPG_PASSPHRASE }}
+
       - uses: goreleaser/goreleaser-action@v6
+        if: steps.tag.outputs.skip != 'true'
         with:
           args: release --clean
         env:
