@@ -38,12 +38,13 @@ Before provider resource implementation, obtain upstream agreement on:
 4. A documented compatibility policy for `/api/canonical/0/`.
 5. Idempotency behavior for POST creation, or an idempotency-key mechanism.
 
-Open `docs/upstream-proposal.md` as a GitHub issue in `bugsink/bugsink`. Do
-not claim upstream endorsement unless it is explicit. Note: this list is no
-longer a hard gate on starting the provider — see AGENTS.md's amended
-"Delete-endpoint policy" (2026-08-24). The issue is still drafted but not
-filed (see `docs/upstream-proposal.md`); filing it remains open work,
-independent of the resources already shipped.
+Filed as [bugsink/bugsink#495](https://github.com/bugsink/bugsink/issues/495)
+(2026-08-26) — see `docs/upstream-proposal.md`. Do not claim upstream
+endorsement unless it is explicit. Note: this list is no longer a hard gate
+on starting the provider — see AGENTS.md's amended "Delete-endpoint policy"
+(2026-08-24); the resources shipped before this issue was filed, and the
+issue is what would remove their delete limitation, not what unblocked
+building them.
 
 ## Candidate v1 scope
 
@@ -64,7 +65,7 @@ sourcemaps from v1.
 
 | Milestone | Outcome | Status |
 | --- | --- | --- |
-| Upstream contract | Delete/auth/versioning decisions agreed and documented | Not agreed; superseded for v1 by the delete-endpoint policy amendment. Issue still unfiled. |
+| Upstream contract | Delete/auth/versioning decisions agreed and documented | Not agreed yet; superseded for v1 by the delete-endpoint policy amendment. Issue filed: [bugsink/bugsink#495](https://github.com/bugsink/bugsink/issues/495). |
 | Spike | Go HTTP client plus a disposable Bugsink 2.5 acceptance environment | Done |
 | MVP | Team/project CRUD, import, drift handling, generated docs, acceptance tests | Done |
 | Public v1 | Signed multi-platform releases, Registry publication, compatibility matrix, support policy | Signed releases and Registry publication done ([nmehlei/bugsink](https://registry.terraform.io/providers/nmehlei/bugsink)); compatibility matrix and support policy still open |

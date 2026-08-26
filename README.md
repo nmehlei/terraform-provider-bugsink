@@ -131,9 +131,9 @@ dev_overrides instead of the Registry.)
   about the API, including quirks found by exercising a live instance.
 - [`docs/architecture.md`](docs/architecture.md) — intended package layout
   and release process.
-- [`docs/upstream-proposal.md`](docs/upstream-proposal.md) — the issue
-  drafted for Bugsink (delete endpoints, scoped tokens, compatibility
-  policy), not yet filed.
+- [`docs/upstream-proposal.md`](docs/upstream-proposal.md) — the upstream ask
+  (delete endpoints, scoped tokens, compatibility policy), filed as
+  [bugsink/bugsink#495](https://github.com/bugsink/bugsink/issues/495).
 - [`TASKS.md`](TASKS.md) — the running kickoff checklist.
 
 ## Contributing

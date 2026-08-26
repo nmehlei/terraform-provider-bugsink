@@ -1,7 +1,9 @@
 # Kickoff checklist
 
 - [x] Confirm repository owner, public provider namespace, and license. (owner/namespace: `nmehlei`, revisit if Bugsink wants to adopt it — see docs/architecture.md; license: Apache-2.0)
-- [ ] File `docs/upstream-proposal.md` with Bugsink.
+- [x] File `docs/upstream-proposal.md` with Bugsink — filed as
+      [bugsink/bugsink#495](https://github.com/bugsink/bugsink/issues/495)
+      (2026-08-26).
 - [ ] Wait for and record upstream lifecycle and token decisions.
 - [x] Initialize Go module (`src/bugsink` client package + `src/provider` provider package).
 - [x] Add disposable Bugsink Docker Compose test environment.

@@ -1,26 +1,20 @@
-# Draft upstream issue: Terraform-friendly lifecycle API
+# Upstream issue: Terraform-friendly lifecycle API
 
-Suggested issue title: "Delete/idempotency/token-scoping support needed for a
-Terraform provider"
-
-Target repo: `bugsink/bugsink`
+Filed as [bugsink/bugsink#495](https://github.com/bugsink/bugsink/issues/495)
+on 2026-08-26.
 
 ## Context
 
-We would like to build an independent, public Terraform provider for Bugsink
-(Go, HashiCorp's Terraform Plugin Framework, Apache-2.0). Terraform's
-create/read/update/delete/import model requires a safe, documented delete
-path for every resource it manages — the canonical API's `/api/canonical/0/`
-already covers list, create, retrieve, and partial-update for teams and
-projects, which is an excellent foundation, but the gaps below currently
-block us from starting resource implementation (state-only removal that
-leaves a remote project or team behind is not acceptable in a public
-provider).
+This provider is built and published
+([registry.terraform.io/providers/nmehlei/bugsink](https://registry.terraform.io/providers/nmehlei/bugsink)).
+`bugsink_team` and `bugsink_project` support create/read/update/import/drift
+detection. What's still missing upstream is a documented `DELETE` — per
+AGENTS.md's "Delete-endpoint policy," `Delete` on both resources fails on
+purpose with an actionable diagnostic instead of silently removing state,
+rather than blocking the provider's existence on this entirely. The issue
+below is what would remove that limitation.
 
 ## Request
-
-Could Bugsink document or add the following before we treat teams, projects,
-or releases as Terraform resources?
 
 1. `DELETE` endpoints for projects and teams. Specifically, documented
    behavior for:
@@ -43,9 +37,10 @@ or releases as Terraform resources?
 
 ## Proposed collaboration
 
-The provider would be a separately licensed, independent Go project using the
-public HTTP API — not a fork or embedding of Bugsink server code. We would
-welcome upstream review of our API mappings and compatibility tests, and
-guidance on permitted trademark/provider-namespace use (we are not assuming
-the `bugsink` Terraform namespace). Would Bugsink be interested in
-sponsoring, adopting, or recommending it once these gaps are addressed?
+The provider is a separately licensed, independent Go project using the
+public HTTP API — not a fork or embedding of Bugsink server code. We'd
+welcome upstream review of the API mappings and compatibility tests, and
+guidance on permitted trademark/provider-namespace use (not assuming the
+`bugsink` Terraform namespace). Open to sponsorship, adoption, or a
+recommendation from Bugsink once these gaps are addressed — no expectation
+either way.
